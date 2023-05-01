@@ -1,0 +1,46 @@
+---
+title: "ESM 204 Homework 2"
+author: "Justine Lang"
+date: "2023-05-01"
+output: 
+  html_document: 
+    code_folding: hide
+---
+
+```{r setup, include=FALSE, echo = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+library(tidyr)
+library(kableExtra)
+```
+
+```{r}
+carbon <- read_csv(here("CarbonUC.csv")) %>% 
+  clean_names()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
