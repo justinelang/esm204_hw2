@@ -179,8 +179,43 @@ Here you will analyze three alternative interventions for reducing carbon emissi
 **a.** Intervention 1 - Carbon Tax: Each campus must pay a tax of $50/ton for each ton of emissions. How much would each campus choose to emit? How much would each campus abate? What is the total amount of emissions across all four campuses? How much tax revenue is generated?
 
 ```{r}
-tax <- 50
+ucsb_tax <- function(P){(ucsb_base - (P/ucsb_slope))}
+ucsb_tax(50)
+
+ucla_tax <- function(P){(ucla_base - (P/ucla_slope))}
+ucla_tax(50)
+
+uci_tax <- function(P){(uci_base - (P/uci_slope))}
+uci_tax(50)
+
+ucd_tax <- function(P){(ucd_base - (P/ucd_slope))}
+ucd_tax(50)
 ```
+
+UCSB emit: 40209.19 
+
+UCLA emit: 178717.5 
+
+UCI emit: 75096.24 
+
+UCD emit: 143466.4 
+
+```{r}
+ucsb_base - 40209
+ucla_base - 178717
+uci_base - 75096
+ucd_base - 143466
+```
+UCSB abate: 49791
+UCLA abate: 71283
+UCI abate: 24904
+UCD abate: 16534
+
+```{r}
+###i don't know what i'm doing
+```
+
+
 
 ```{r}
 ggplot(data = carbon_long, aes(x = abatement, color = campus)) +
@@ -196,7 +231,28 @@ Come back to this.
 
 **b.** Intervention 2 - Carbon Ban: Carbon emissions are banned at each campus. What is the total cost of this ban to each campus?
 
-Come back to this.
+```{r}
+ucsb_ban <- (ucsb_base * ucsb_slope*ucsb_base)/2
+ucsb_ban
+
+ucla_ban <- (ucla_base * ucla_slope*ucla_base)/2
+ucla_ban
+
+uci_ban <- (uci_base * uci_slope*uci_base)/2
+uci_ban
+
+ucd_ban <- (ucd_base * ucd_slope*ucd_base)/2
+ucd_ban
+```
+
+UCSB total cost: $4067016 
+
+UCLA total cost: $21919836 
+
+UCI total cost: $10038644 
+
+UCD total cost: $38709018 
+
 
 
 **c.** Intervention 3 - Cap without Trade: Each campus is capped at 100,000 tons of carbon. How much abatement would be required by each campus to comply with this cap? What is the marginal cost of the last unit of abatement for each campus? What is the total cost of abatement for each campus to comply with this new cap?
@@ -233,8 +289,50 @@ UCLA total cost: $7,891,141
 UCD total cost: $5,443,456
 
 
+**d.** Intervention 4 - Cap with Trade: Suppose each campus is capped at 100,000 tons of carbon, but trade is allowed. With trade, total emissions will be 400,000 but some campuses may emit more or less than 100,000. How much would each campus end up emitting after trade? What is the equilibrium trading price of carbon permits? For each campus, calculate whether they are a buyer or a seller of permits.
+
+```{r}
+d3_df <- data.frame(p = seq(0, 500, length.out = 100)) %>%
+  mutate(emissions_ucsb = pmax(0, ucsb_base - p/ucsb_slope)) %>%
+  mutate(emissions_ucla = pmax(0, ucla_base - p/ucla_slope)) %>%
+  mutate(emissions_uci = pmax(0, uci_base - p/uci_slope)) %>%
+  mutate(emissions_ucd = pmax(0, ucd_base - p/ucd_slope)) %>%
+  mutate(emissions_agg = emissions_ucsb + emissions_ucla + emissions_uci + emissions_ucd)
+```
+
+```{r}
+# pstar <- spline(x = d3_df$emissions_agg, y = d3_df$p, xout = 400000)$y
+# pstar
+
+em_ucsb <- function(P){(ucsb_base - (P/ucsb_slope))}
+em_ucsb(61.53)
+
+em_ucla <- function(P){(ucla_base - (P/ucla_slope))}
+em_ucla(61.53)
+
+em_uci <- function(P){(uci_base - (P/uci_slope))}
+em_uci(61.53)
+
+em_ucd <- function(P){(ucd_base - (P/ucd_slope))}
+em_ucd(61.53)
+```
+
+UCSB: seller
+
+UCLA: buyer
+
+UCI: seller
+
+UCD: buyer
 
 
+## Question 4
+
+The central campus decides to go with the “Cap with Trade” approach (Scenario 3d above). An altruistic philanthropist buys 50,000 of the permits from the cap and trade market and retires them (i.e. not emit the carbon), so only 350,000 tons will be emitted. What is the new trading price among the four campuses? How much will it cost the philanthropist to buy and retire these permits?
+
+```{r}
+
+```
 
 
 
