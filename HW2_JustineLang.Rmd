@@ -23,8 +23,57 @@ carbon <- read_csv(here("CarbonUC.csv")) %>%
 ```
 
 
+## Question 1
+
+For each campus, plot the marginal abatement cost data and estimate a linear regression model with zero intercept. These estimated linear regressions will be your estimates of the marginal abatement cost curve for each campus, which you will use for the remainder of this analysis. Write the equation for the marginal abatement cost curve for each campus.
+
+```{r}
+###plot abatement for ucsb
+
+ggplot(data = carbon) +
+  geom_point(aes(x = abatement, y = ucsb)) +
+  geom_point(aes(x = abatement, y = ucla)) +
+  geom_point(aes(x = abatement, y = uci)) +
+  geom_point(aes(x = abatement, y = ucd)) +
+  labs(x = "Abatement (tons C02)",
+       y= "Marginal Cost Of Abatement ($/ton)",
+       title = "UCSB Abatement") +
+  theme_minimal()
+```
+
+Fix this later ^^^
 
 
+```{r}
+### UCSB linear regression model 
+ucsb_lm <- lm(ucsb ~ 0 + abatement, data = carbon)
+
+### coefficient: 0.001004  
+
+### UCLA linear regression model 
+ucla_lm <- lm(ucla ~ 0 + abatement, data = carbon)
+
+### coefficient: 0.0007014
+
+### UCI linear regression model 
+uci_lm <- lm(uci ~ 0 + abatement, data = carbon)
+
+### coefficient: 0.002008 
+
+### UCD linear regression model 
+ucd_lm <- lm(ucd ~ 0 + abatement, data = carbon)
+
+### coefficient: 0.003024  
+```
+
+```{r}
+###fitting line for ucsb
+
+# ucsb_base <- 150
+# kern_data <- tibble(Reduction = 0:150)
+# predicted_mc <- predict(kern_lm, newdata=kern_data)
+# kern_data <- kern_data %>% mutate(predicted_mc=predicted_mc)
+```
 
 
 
