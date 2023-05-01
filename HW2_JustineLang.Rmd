@@ -157,7 +157,26 @@ UCD: $P = 0.003A$
 
 Using your estimated marginal abatement cost curves, together with the baseline emissions, derive each campus’ demand curve for carbon. In other words, how much would each campus be willing to pay to emit the first ton of carbon, the second ton of carbon, etc. Plot each campus’ demand curve for emissions on a single graph. Which campus is willing to pay the most for the first ton of carbon emissions?
 
+```{r}
+###Plot demand curve - add caption
 
+ggplot(data = carbon_long, aes(x = abatement, color = campus)) +
+geom_line(aes(y = demand), size = 0.8) + 
+  scale_color_manual(values = c('gold2','blue', 'yellow', 'navy')) +
+  labs(x = '\n Tons CO2 Emitted', y = 'Marginal willingness to pay ($/ton)\n', color = 'Campus') + 
+  theme_minimal()
+```
+
+
+UCD is willing to pay the most to emit the first ton of carbon. 
+
+
+
+## Question 3
+
+Here you will analyze three alternative interventions for reducing carbon emissions across these four campuses. Please answer the questions about each intervention listed below.
+
+**a.** Intervention 1 - Carbon Tax: Each campus must pay a tax of $50/ton for each ton of emissions. How much would each campus choose to emit? How much would each campus abate? What is the total amount of emissions across all four campuses? How much tax revenue is generated?
 
 
 
