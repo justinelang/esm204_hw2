@@ -178,6 +178,63 @@ Here you will analyze three alternative interventions for reducing carbon emissi
 
 **a.** Intervention 1 - Carbon Tax: Each campus must pay a tax of $50/ton for each ton of emissions. How much would each campus choose to emit? How much would each campus abate? What is the total amount of emissions across all four campuses? How much tax revenue is generated?
 
+```{r}
+tax <- 50
+```
+
+```{r}
+ggplot(data = carbon_long, aes(x = abatement, color = campus)) +
+geom_line(aes(y = demand), size = 0.8) + 
+  geom_line(aes( y = 50), size = 0.8) +
+  scale_color_manual(values = c('gold2','blue', 'yellow', 'navy')) +
+  labs(x = '\n Tons CO2 Emitted', y = 'Marginal willingness to pay ($/ton)\n', color = 'Campus') + 
+  theme_minimal()
+```
+
+Come back to this.
+
+
+**b.** Intervention 2 - Carbon Ban: Carbon emissions are banned at each campus. What is the total cost of this ban to each campus?
+
+Come back to this.
+
+
+**c.** Intervention 3 - Cap without Trade: Each campus is capped at 100,000 tons of carbon. How much abatement would be required by each campus to comply with this cap? What is the marginal cost of the last unit of abatement for each campus? What is the total cost of abatement for each campus to comply with this new cap?
+
+```{r}
+ucla_abate <- ucla_base - 100000
+ucd_abate <- ucd_base - 100000
+
+### UCLA would have to abate 150,000 tons. UCD would have to abate 60,000 tons
+```
+
+UCLA would have to abate 150,000 tons. UCD would have to abate 60,000 tons. UCSB and UCI do not exceed the cap and would not need to pay for abatement. 
+
+```{r}
+ucla_abate_cost <- function(a){ucla_slope * a}
+ucla_abate_cost(ucla_abate)
+
+ucd_abate_cost <- function(a){ucd_slope * a}
+ucd_abate_cost(ucd_abate)
+```
+
+UCLA MAC: $105.22
+
+UCD MAC: $181.45
+
+```{r}
+ucla_total <- (ucla_abate * ucla_abate_cost(ucla_abate))/2
+
+ucd_total <- (ucd_abate * ucd_abate_cost(ucd_abate))/2
+```
+
+UCLA total cost: $7,891,141
+
+UCD total cost: $5,443,456
+
+
+
+
 
 
 
