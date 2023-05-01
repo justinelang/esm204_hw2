@@ -22,6 +22,13 @@ carbon <- read_csv(here("CarbonUC.csv")) %>%
   clean_names()
 ```
 
+```{r}
+###Pivot data frame longer
+
+carbon_long <- carbon %>% 
+  pivot_longer(cols = c(2:5), names_to = "campus", values_to = "mc")
+```
+
 
 ## Question 1
 
@@ -30,18 +37,15 @@ For each campus, plot the marginal abatement cost data and estimate a linear reg
 ```{r}
 ###plot abatement for ucsb
 
-ggplot(data = carbon) +
-  geom_point(aes(x = abatement, y = ucsb)) +
-  geom_point(aes(x = abatement, y = ucla)) +
-  geom_point(aes(x = abatement, y = uci)) +
-  geom_point(aes(x = abatement, y = ucd)) +
+ggplot(data = carbon_long, aes(x = abatement, y = mc, color = campus)) +
+  geom_point() +
+  scale_color_manual(values = c('gold2','blue', 'yellow', 'navy')) +
   labs(x = "Abatement (tons C02)",
-       y= "Marginal Cost Of Abatement ($/ton)",
-       title = "UCSB Abatement") +
+       y= "Marginal Cost of Abatement ($/ton)",
+       title = "UC Carbon Abatement") +
   theme_minimal()
 ```
 
-Fix this later ^^^
 
 
 ```{r}
@@ -67,20 +71,91 @@ ucd_lm <- lm(ucd ~ 0 + abatement, data = carbon)
 ```
 
 ```{r}
-###fitting line for ucsb
+###slopes and baselines
 
-# ucsb_base <- 150
-# kern_data <- tibble(Reduction = 0:150)
-# predicted_mc <- predict(kern_lm, newdata=kern_data)
-# kern_data <- kern_data %>% mutate(predicted_mc=predicted_mc)
+ucsb_slope <- ucsb_lm$coefficient[1]
+ucla_slope <- ucla_lm$coefficient[1]
+uci_slope <- uci_lm$coefficient[1]
+ucd_slope <- ucd_lm$coefficient[1]
+
+ucsb_base <- 90000
+ucla_base <- 250000
+uci_base <- 100000
+ucd_base <- 160000
+```
+
+```{r}
+slope_df <- data.frame(ucsb_slope, 
+                       ucla_slope,
+                       uci_slope,
+                       ucd_slope) %>% 
+  rename(ucsb = ucsb_slope,
+         ucla = ucla_slope,
+         uci = uci_slope,
+         ucd = ucd_slope) %>% 
+  pivot_longer(ucsb:ucd,
+               names_to = "campus",
+               values_to = "slope")
+
+slope_df <- slope_df %>% 
+  mutate(baseline = case_when(
+    campus == "ucsb" ~ ucsb_base,
+    campus == "ucla" ~ ucla_base,
+    campus == "uci" ~ uci_base,
+    campus == "ucd" ~ ucd_base
+  ))
+```
+
+```{r}
+###Create predicted MC curves
+
+ucsb_predict <- predict(ucsb_lm)
+ucla_predict <- predict(ucla_lm)
+uci_predict <- predict(uci_lm)
+ucd_predict <- predict(ucd_lm)
+```
+
+```{r}
+mc_predict_df <- data.frame(ucsb_predict, ucla_predict, uci_predict, ucd_predict) %>% 
+  rename(ucsb = ucsb_predict,
+         ucla = ucla_predict,
+         uci = uci_predict,
+         ucd = ucd_predict) %>% 
+  pivot_longer(ucsb:ucd, names_to = "campus", values_to = "mc_predict")
+
+carbon_long$mc_predict <- mc_predict_df$mc_predict
+```
+
+```{r}
+###Create demand curve
+
+carbon_long <- carbon_long %>% 
+  mutate(demand = slope_df$slope*(slope_df$baseline - carbon_long$abatement))
+```
+
+```{r}
+###Plot MC curves - add caption
+
+ggplot(data = carbon_long, aes(x = abatement, color = campus)) +
+  geom_line(aes(y = mc_predict), size = 0.8) + 
+  scale_color_manual(values = c('gold2','blue', 'yellow', 'navy')) +
+  geom_point(aes(y = mc), alpha = 0.3) +
+  labs(x = '\n Tons CO2 Abated', y = 'Marginal cost of abatement ($/ton)\n', color = 'Campus') + 
+  theme_minimal()
 ```
 
 
 
+UCSB: $P = 0.001A$
+UCLA: $P = 0.0007A$
+UCI: $P = 0.002A$
+UCD: $P = 0.003A$
 
 
 
+## Question 2
 
+Using your estimated marginal abatement cost curves, together with the baseline emissions, derive each campus’ demand curve for carbon. In other words, how much would each campus be willing to pay to emit the first ton of carbon, the second ton of carbon, etc. Plot each campus’ demand curve for emissions on a single graph. Which campus is willing to pay the most for the first ton of carbon emissions?
 
 
 
